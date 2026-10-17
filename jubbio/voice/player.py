@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
+import json
 import logging
 import os
 import sys
 from array import array
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Set, Union
 
 from .._utils import CamelCaseCompat
 from ..events import EventEmitter
 from .enums import AudioPlayerStatus, NoSubscriberBehavior
-from .resource import AudioResource, find_ffmpeg, yt_dlp_command
+from .resource import FFMPEG_HELP, AudioResource, find_ffmpeg, yt_dlp_command
 
 if TYPE_CHECKING:
     from .connection import VoiceConnection
@@ -42,6 +44,18 @@ def _import_rtc():
             "Ses desteği için 'livekit' paketi gerekli: pip install \"jubbio.py[voice]\""
         ) from exc
     return rtc
+
+
+def _import_av():
+    try:
+        import av
+    except ImportError:
+        return None
+    return av
+
+
+class _DecoderStopped(Exception):
+    """PyAV iş parçacığına çalmanın durdurulduğunu bildirir."""
 
 
 @dataclass
@@ -81,8 +95,13 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
     """
 
     def __init__(self, *, behaviors: Optional[Mapping[str, Any]] = None, ffmpeg_path: Optional[str] = None,
-                 yt_dlp_path: Optional[str] = None) -> None:
+                 yt_dlp_path: Optional[str] = None, decoder: str = "auto") -> None:
+        """``decoder``: ``"auto"`` (FFmpeg programı varsa onu, yoksa PyAV'ı kullanır),
+        ``"ffmpeg"`` veya ``"pyav"`` (``pip install av`` — ayrı FFmpeg kurulumu gerekmez)."""
         super().__init__()
+        if decoder not in ("auto", "ffmpeg", "pyav"):
+            raise ValueError("decoder 'auto', 'ffmpeg' veya 'pyav' olmalı")
+        self.decoder = decoder
         merged = {"no_subscriber": NoSubscriberBehavior.Pause, "max_missed_frames": 5}
         for key, value in (behaviors or {}).items():
             merged["no_subscriber" if key in ("noSubscriber", "no_subscriber") else key] = value
@@ -105,6 +124,7 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
         self._playback_task: Optional[asyncio.Task] = None
         self._start_task: Optional[asyncio.Task] = None
         self._ffmpeg_done = False
+        self._decoder_error: Optional[str] = None
         self._resume = asyncio.Event()
         self._generation = 0
 
@@ -205,16 +225,39 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
         await room.local_participant.publish_track(self._audio_track, options)
         self._published_room = room
 
-    async def _spawn_decoder(self, source: str) -> asyncio.subprocess.Process:
-        ffmpeg = find_ffmpeg(self.ffmpeg_path)
-        output_args = ["-f", "s16le", "-ar", str(SAMPLE_RATE), "-ac", str(CHANNELS), "-acodec", "pcm_s16le", "-"]
+    @staticmethod
+    def _normalize_source(source: str) -> str:
         is_url = source.startswith(("http://", "https://", "ytsearch"))
         if not is_url and not os.path.exists(source):
             # URL veya dosya değilse YouTube'da ara
-            source = f"ytsearch1:{source}"
             log.debug("YouTube aramasına dönüştürüldü: %s", source)
+            return f"ytsearch1:{source}"
+        return source
 
-        if any(t in source for t in _YTDLP_TRIGGERS) or source.startswith("ytsearch"):
+    @staticmethod
+    def _needs_yt_dlp(source: str) -> bool:
+        return any(t in source for t in _YTDLP_TRIGGERS) or source.startswith("ytsearch")
+
+    def _select_backend(self) -> str:
+        if self.decoder != "auto":
+            if self.decoder == "pyav" and _import_av() is None:
+                raise RuntimeError("PyAV kurulu değil: python -m pip install av")
+            return self.decoder
+        try:
+            find_ffmpeg(self.ffmpeg_path)
+            return "ffmpeg"
+        except FileNotFoundError:
+            if _import_av() is not None:
+                log.debug("FFmpeg programı bulunamadı, PyAV kullanılıyor")
+                return "pyav"
+            raise RuntimeError(f"{FFMPEG_HELP} Alternatif olarak FFmpeg kurmadan: python -m pip install av") from None
+
+    async def _spawn_decoder(self, source: str) -> asyncio.subprocess.Process:
+        ffmpeg = find_ffmpeg(self.ffmpeg_path)
+        output_args = ["-f", "s16le", "-ar", str(SAMPLE_RATE), "-ac", str(CHANNELS), "-acodec", "pcm_s16le", "-"]
+        source = self._normalize_source(source)
+
+        if self._needs_yt_dlp(source):
             # GÜVENLİK: kabuk kullanılmaz, argümanlar liste olarak verilir
             ytdlp_args = ["-f", "bestaudio/best", "-o", "-", "--no-playlist", "--no-warnings",
                           "--default-search", "ytsearch", source]
@@ -244,12 +287,18 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
         return decoder
 
     async def _start_ffmpeg(self, resource: AudioResource, generation: int) -> None:
-        decoder = await self._spawn_decoder(resource.get_input_source())
+        backend = self._select_backend()
         queue: asyncio.Queue = asyncio.Queue(maxsize=MAX_BUFFER_FRAMES)
         self._queue = queue
         self._ffmpeg_done = False
+        self._decoder_error = None
         loop = asyncio.get_running_loop()
-        self._reader_task = loop.create_task(self._read_frames(decoder, queue, generation))
+        decoder: Optional[asyncio.subprocess.Process] = None
+        if backend == "ffmpeg":
+            decoder = await self._spawn_decoder(resource.get_input_source())
+            self._reader_task = loop.create_task(self._read_frames(decoder, queue, generation))
+        else:
+            self._reader_task = loop.create_task(self._run_pyav(resource.get_input_source(), queue, generation))
 
         # İlk tamponun dolmasını bekle
         waited = 0.0
@@ -261,6 +310,10 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
         if generation != self._generation:
             return
         if queue.empty():
+            if decoder is None:
+                if self._ffmpeg_done:
+                    raise RuntimeError(f"PyAV ses verisi üretemedi{': ' + self._decoder_error if self._decoder_error else ''}")
+                raise RuntimeError("Ses verisi beklenirken zaman aşımı")
             stderr = b""
             if decoder.stderr is not None:
                 try:
@@ -293,6 +346,90 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
                 self._ffmpeg_done = True
             code = await decoder.wait()
             log.debug("FFmpeg kapandı (kod %s), kuyruk: %d", code, queue.qsize())
+
+    async def _resolve_stream(self, source: str) -> tuple:
+        """yt-dlp ile doğrudan ses akışı adresini ve gerekli HTTP başlıklarını bulur."""
+        args = ["-f", "bestaudio/best", "-j", "--no-playlist", "--no-warnings", "--default-search", "ytsearch", source]
+        process = await asyncio.create_subprocess_exec(
+            *yt_dlp_command(self.yt_dlp_path), *args,
+            stdin=asyncio.subprocess.DEVNULL, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        self._processes.append(process)
+        stdout, stderr = await asyncio.wait_for(process.communicate(), 30)
+        lines = stdout.decode(errors="replace").strip().splitlines()
+        if process.returncode != 0 or not lines:
+            raise RuntimeError(f"yt-dlp akış adresi alınamadı: {stderr.decode(errors='replace').strip()}")
+        info = json.loads(lines[0])
+        url = info.get("url")
+        if not url and info.get("requested_formats"):
+            url = info["requested_formats"][0].get("url")
+        if not url:
+            raise RuntimeError("yt-dlp akış adresi döndürmedi")
+        return url, info.get("http_headers") or {}
+
+    async def _run_pyav(self, source: str, queue: asyncio.Queue, generation: int) -> None:
+        loop = asyncio.get_running_loop()
+        try:
+            source = self._normalize_source(source)
+            headers: Mapping[str, str] = {}
+            if self._needs_yt_dlp(source):
+                source, headers = await self._resolve_stream(source)
+            await loop.run_in_executor(None, self._pyav_decode, source, dict(headers), queue, loop, generation)
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            if generation == self._generation:
+                self._decoder_error = str(exc)
+                log.debug("PyAV hatası: %s", exc)
+        finally:
+            if generation == self._generation:
+                self._ffmpeg_done = True
+
+    def _pyav_decode(self, source: str, headers: Dict[str, str], queue: asyncio.Queue,
+                     loop: asyncio.AbstractEventLoop, generation: int) -> None:
+        """İş parçacığında çalışır: kaynağı çözer, 48kHz stereo s16 karelerini kuyruğa koyar."""
+        av = _import_av()
+        options: Dict[str, str] = {}
+        if source.startswith(("http://", "https://")):
+            options = {"reconnect": "1", "reconnect_streamed": "1", "reconnect_delay_max": "5"}
+            if headers:
+                options["headers"] = "".join(f"{k}: {v}\r\n" for k, v in headers.items())
+
+        def put(chunk: bytes) -> None:
+            future = asyncio.run_coroutine_threadsafe(queue.put(chunk), loop)
+            while True:
+                if generation != self._generation:
+                    future.cancel()
+                    raise _DecoderStopped
+                try:
+                    future.result(0.25)
+                    return
+                except concurrent.futures.TimeoutError:
+                    continue
+
+        buffer = bytearray()
+        try:
+            with av.open(source, options=options) as container:
+                stream = container.streams.audio[0]
+                resampler = av.AudioResampler(format="s16", layout="stereo", rate=SAMPLE_RATE)
+
+                def feed(frames: Any) -> None:
+                    for out in frames:
+                        buffer.extend(bytes(out.planes[0])[: out.samples * CHANNELS * 2])
+                        while len(buffer) >= FRAME_SIZE:
+                            put(bytes(buffer[:FRAME_SIZE]))
+                            del buffer[:FRAME_SIZE]
+
+                for packet in container.demux(stream):
+                    if generation != self._generation:
+                        return
+                    for frame in packet.decode():
+                        feed(resampler.resample(frame))
+                feed(resampler.resample(None))
+            if buffer:
+                put(bytes(buffer) + b"\x00" * (FRAME_SIZE - len(buffer)))
+        except _DecoderStopped:
+            return
 
     async def _playback_loop(self, queue: asyncio.Queue, resource: AudioResource, generation: int) -> None:
         rtc = _import_rtc()

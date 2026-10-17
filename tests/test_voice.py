@@ -206,3 +206,42 @@ def test_ffmpeg_missing_message(monkeypatch):
     monkeypatch.setattr(resource, "_find_in_scripts", lambda name: None)
     with pytest.raises(FileNotFoundError, match="FFmpeg bulunamadı"):
         resource.find_ffmpeg()
+
+
+@pytest.mark.skipif(player_module._import_av() is None, reason="PyAV kurulu değil")
+async def test_pyav_backend_without_ffmpeg(client, server, wav_file, tmp_path, monkeypatch):
+    """FFmpeg programı yokken 'auto' mod PyAV'a geçer ve aynı sonucu üretir."""
+    def missing(*_a, **_k):
+        raise FileNotFoundError("yok")
+
+    monkeypatch.setattr(player_module, "find_ffmpeg", missing)
+    connection = await _connect(client, server)
+    player = create_audio_player()
+    assert player._select_backend() == "pyav"
+    connection.subscribe(player)
+    player.play(create_audio_resource(str(wav_file)))
+    await enters_state(player, AudioPlayerStatus.Playing, 10)
+    await enters_state(player, AudioPlayerStatus.Idle, 10)
+    source = FakeAudioSource.instances[0]
+    assert len(source.frames) == 25
+    assert all(len(f["data"]) == FRAME_SIZE for f in source.frames)
+    # Ses verisi gerçekten çözülmüş (sessizlik değil)
+    assert any(any(f["data"][i] for i in range(0, FRAME_SIZE, 97)) for f in source.frames)
+
+    errors = []
+    player.on("error", errors.append)
+    bad = tmp_path / "bozuk.mp3"
+    bad.write_bytes(b"bu bir ses dosyasi degil")
+    player.play(create_audio_resource(str(bad)))
+    await until(lambda: errors, timeout=10)
+    assert "PyAV" in errors[0].message and player.state.status == AudioPlayerStatus.Idle
+
+
+def test_no_decoder_message(monkeypatch):
+    def missing(*_a, **_k):
+        raise FileNotFoundError("yok")
+
+    monkeypatch.setattr(player_module, "find_ffmpeg", missing)
+    monkeypatch.setattr(player_module, "_import_av", lambda: None)
+    with pytest.raises(RuntimeError, match="pip install av"):
+        create_audio_player()._select_backend()

@@ -39,15 +39,16 @@ cd jubbiopy
 pip install -e ".[voice]"
 ```
 
-Ses desteği için sistemde ayrıca **FFmpeg** ve (YouTube / SoundCloud için) **yt-dlp** kurulu olmalıdır:
+Ses desteği için ayrıca kurulum **gerekmez**: `[voice]` paketi ses çözümleme için
+[PyAV](https://pypi.org/project/av/)'ı (FFmpeg kütüphaneleri içinde gelir) kurar.
+YouTube / SoundCloud için yt-dlp'yi de pip ile kurun:
 
 ```bash
-# Ubuntu/Debian
-sudo apt install ffmpeg && pip install yt-dlp
-# macOS
-brew install ffmpeg yt-dlp
-# Windows: ffmpeg.org ve yt-dlp GitHub sürümlerinden indirip PATH'e ekleyin
+pip install "jubbio.py[voice]" yt-dlp
 ```
+
+Sistemde **FFmpeg programı** kuruluysa o kullanılır, yoksa otomatik olarak PyAV'a geçilir.
+Seçimi elle yapmak için: `create_audio_player(decoder="pyav")` veya `decoder="ffmpeg"`.
 
 ## Hızlı Başlangıç
 
@@ -383,7 +384,7 @@ pytest
 ```
 
 Testler sahte bir Jubbio gateway + REST sunucusuna karşı çalışır (gerçek token gerekmez);
-ses testleri FFmpeg varsa gerçek çözümleme yapar.
+ses testleri FFmpeg / PyAV ile gerçek çözümleme yapar.
 
 ## Lisans
 

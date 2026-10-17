@@ -1,4 +1,4 @@
-"""Müzik botu örneği (``pip install "jubbio.py[voice]"`` + FFmpeg + yt-dlp gerekli).
+"""Müzik botu örneği. Gerekenler: ``pip install "jubbio.py[voice]" yt-dlp`` (FFmpeg kurmak gerekmez).
 
 Komutlar: /cal <url veya arama>, /duraklat, /devam, /durdur, /ayril
 
