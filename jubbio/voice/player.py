@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Set, Union
 from .._utils import CamelCaseCompat
 from ..events import EventEmitter
 from .enums import AudioPlayerStatus, NoSubscriberBehavior
-from .resource import AudioResource, find_ffmpeg, find_yt_dlp
+from .resource import AudioResource, find_ffmpeg, yt_dlp_command
 
 if TYPE_CHECKING:
     from .connection import VoiceConnection
@@ -221,7 +221,7 @@ class AudioPlayer(EventEmitter, CamelCaseCompat):
             read_fd, write_fd = os.pipe()
             try:
                 ytdlp = await asyncio.create_subprocess_exec(
-                    find_yt_dlp(self.yt_dlp_path), *ytdlp_args,
+                    *yt_dlp_command(self.yt_dlp_path), *ytdlp_args,
                     stdin=asyncio.subprocess.DEVNULL, stdout=write_fd, stderr=asyncio.subprocess.DEVNULL,
                 )
                 self._processes.append(ytdlp)

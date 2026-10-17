@@ -21,25 +21,78 @@ log = logging.getLogger("jubbio.voice")
 STREAMING_DOMAINS = ("youtube.com", "youtu.be", "soundcloud.com", "spotify.com", "twitch.tv", "vimeo.com")
 
 
-def find_yt_dlp(path: Optional[str] = None) -> str:
-    """yt-dlp çalıştırılabilir dosyasını bulur.
+YTDLP_HELP = (
+    "yt-dlp bulunamadı. Kurmak için: python -m pip install yt-dlp "
+    "(veya YTDLP_PATH ortam değişkeniyle yt-dlp.exe yolunu verin)."
+)
+FFMPEG_HELP = (
+    "FFmpeg bulunamadı. FFmpeg'i kurup 'bin' klasörünü PATH'e ekleyin "
+    "(Windows: https://www.gyan.dev/ffmpeg/builds/) veya FFMPEG_PATH ortam değişkeniyle "
+    "ffmpeg.exe yolunu verin."
+)
 
-    Öncelik: parametre > ``YTDLP_PATH`` ortam değişkeni > PATH > ``~/.local/bin/yt-dlp``.
+
+def _python_scripts_dirs() -> list:
+    """pip'in komut dosyalarını kurduğu klasörler (Windows'ta çoğu zaman PATH'te değildir)."""
+    import sysconfig
+
+    dirs = []
+    for scheme in (None, f"{os.name}_user"):
+        try:
+            path = sysconfig.get_path("scripts", scheme) if scheme else sysconfig.get_path("scripts")
+        except KeyError:
+            continue
+        if path and path not in dirs:
+            dirs.append(path)
+    dirs.append(os.path.dirname(sys.executable))
+    return dirs
+
+
+def _find_in_scripts(name: str) -> Optional[str]:
+    for directory in _python_scripts_dirs():
+        for candidate in (name, name + ".exe"):
+            full = os.path.join(directory, candidate)
+            if os.path.isfile(full):
+                return full
+    return None
+
+
+def yt_dlp_command(path: Optional[str] = None) -> list:
+    """yt-dlp'yi çalıştıracak komutu döndürür.
+
+    Öncelik: parametre > ``YTDLP_PATH`` > PATH > Python ``Scripts`` klasörü >
+    ``~/.local/bin/yt-dlp`` > ``python -m yt_dlp`` (pip paketi kuruluysa).
     """
+    import importlib.util
+
     candidate = path or os.environ.get("YTDLP_PATH")
     if candidate:
-        return os.path.expanduser(candidate)
-    found = shutil.which("yt-dlp")
+        return [os.path.expanduser(candidate)]
+    found = shutil.which("yt-dlp") or _find_in_scripts("yt-dlp")
     if found:
-        return found
+        return [found]
     local = os.path.expanduser("~/.local/bin/yt-dlp")
     if sys.platform != "win32" and os.path.exists(local):
-        return local
-    return "yt-dlp"
+        return [local]
+    if importlib.util.find_spec("yt_dlp") is not None:
+        return [sys.executable, "-m", "yt_dlp"]
+    raise FileNotFoundError(YTDLP_HELP)
+
+
+def find_yt_dlp(path: Optional[str] = None) -> str:
+    """Geriye dönük uyumluluk: yt-dlp komutunun ilk parçasını döndürür."""
+    return yt_dlp_command(path)[0]
 
 
 def find_ffmpeg(path: Optional[str] = None) -> str:
-    return os.path.expanduser(path or os.environ.get("FFMPEG_PATH") or shutil.which("ffmpeg") or "ffmpeg")
+    """FFmpeg çalıştırılabilir dosyasını bulur; bulunamazsa açıklayıcı hata fırlatır."""
+    candidate = path or os.environ.get("FFMPEG_PATH")
+    if candidate:
+        return os.path.expanduser(candidate)
+    found = shutil.which("ffmpeg") or _find_in_scripts("ffmpeg")
+    if found:
+        return found
+    raise FileNotFoundError(FFMPEG_HELP)
 
 
 def is_valid_url(value: str) -> bool:
@@ -119,16 +172,16 @@ async def probe_audio_info(input: str, yt_dlp_path: Optional[str] = None, *, tim
     URL değilse YouTube'da aranır (``ytsearch1:``).
     """
     query = input if is_valid_url(input) else f"ytsearch1:{input}"
-    binary = find_yt_dlp(yt_dlp_path)
+    command = yt_dlp_command(yt_dlp_path)
     # GÜVENLİK: Kullanıcı girdisi kabuktan (shell) geçirilmez, argüman listesi olarak verilir
     args = ["--no-playlist", "--no-warnings", "-j", query]
-    log.debug("[probe_audio_info] %s %s", binary, " ".join(args))
+    log.debug("[probe_audio_info] %s", " ".join(command + args))
     try:
         process = await asyncio.create_subprocess_exec(
-            binary, *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            *command, *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
     except OSError as exc:
-        raise RuntimeError(f"Ses bilgisi alınamadı: {exc}") from exc
+        raise RuntimeError(f"Ses bilgisi alınamadı, '{command[0]}' çalıştırılamadı: {exc}. {YTDLP_HELP}") from exc
     try:
         stdout, stderr = await asyncio.wait_for(process.communicate(), timeout)
     except asyncio.TimeoutError:

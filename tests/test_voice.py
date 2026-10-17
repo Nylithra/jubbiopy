@@ -171,3 +171,38 @@ def test_volume_scaling():
     frame = struct.pack("<hhhh", 1000, -1000, 30000, -30000)
     assert struct.unpack("<hhhh", _apply_volume(frame, 0.5)) == (500, -500, 15000, -15000)
     assert struct.unpack("<hhhh", _apply_volume(frame, 2.0))[2:] == (32767, -32768)
+
+
+def test_yt_dlp_command_resolution(monkeypatch):
+    import importlib.util
+    import sys
+
+    from jubbio.voice import resource
+
+    monkeypatch.delenv("YTDLP_PATH", raising=False)
+    monkeypatch.setattr(resource.shutil, "which", lambda name: None)
+    monkeypatch.setattr(resource, "_find_in_scripts", lambda name: None)
+    monkeypatch.setattr(resource.os.path, "expanduser", lambda p: "/yok/" + p)
+
+    # pip paketi kuruluysa "python -m yt_dlp" kullanılır (Windows Store Python senaryosu)
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object() if name == "yt_dlp" else None)
+    assert resource.yt_dlp_command() == [sys.executable, "-m", "yt_dlp"]
+
+    # Hiçbiri yoksa açıklayıcı hata
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: None)
+    with pytest.raises(FileNotFoundError, match="pip install yt-dlp"):
+        resource.yt_dlp_command()
+
+    # Elle verilen yol her zaman önceliklidir
+    monkeypatch.setenv("YTDLP_PATH", r"C:\araclar\yt-dlp.exe")
+    assert resource.yt_dlp_command() == ["/yok/" + r"C:\araclar\yt-dlp.exe"]
+
+
+def test_ffmpeg_missing_message(monkeypatch):
+    from jubbio.voice import resource
+
+    monkeypatch.delenv("FFMPEG_PATH", raising=False)
+    monkeypatch.setattr(resource.shutil, "which", lambda name: None)
+    monkeypatch.setattr(resource, "_find_in_scripts", lambda name: None)
+    with pytest.raises(FileNotFoundError, match="FFmpeg bulunamadı"):
+        resource.find_ffmpeg()
