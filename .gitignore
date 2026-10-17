@@ -9,3 +9,5 @@ venv/
 .pytest_cache/
 .mypy_cache/
 ticket_data.json*
+muzik_data.json*
+moderasyon_data.json*
