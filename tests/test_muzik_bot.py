@@ -12,8 +12,8 @@ import wave
 
 import pytest
 
-from jubbio.voice import AudioPlayerStatus, enters_state
-from jubbio.voice import player as player_module
+from jubbiopy.voice import AudioPlayerStatus, enters_state
+from jubbiopy.voice import player as player_module
 
 from .conftest import APP_ID, until
 from .test_voice import FakeAudioSource, fake_rtc

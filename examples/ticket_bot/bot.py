@@ -1,4 +1,4 @@
-"""Gelişmiş Ticket + Hoş Geldin/Ayrılma botu (Jubbio.py).
+"""Gelişmiş Ticket + Hoş Geldin/Ayrılma botu (JubbioPy).
 
 Özellikler
 ----------
@@ -35,7 +35,7 @@ import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from jubbio import (
+from jubbiopy import (
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,

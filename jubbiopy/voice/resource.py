@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from .._utils import CamelCaseCompat
 from .enums import StreamType
 
-log = logging.getLogger("jubbio.voice")
+log = logging.getLogger("jubbiopy.voice")
 
 #: yt-dlp ile çalınması gereken platformlar
 STREAMING_DOMAINS = ("youtube.com", "youtu.be", "soundcloud.com", "spotify.com", "twitch.tv", "vimeo.com")

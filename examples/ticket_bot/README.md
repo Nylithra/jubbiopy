@@ -1,6 +1,6 @@
 # 🎫 Gelişmiş Ticket + Hoş Geldin Botu
 
-Jubbio.py ile yazılmış, kullanıma hazır ticket ve giriş/çıkış botu.
+JubbioPy ile yazılmış, kullanıma hazır ticket ve giriş/çıkış botu.
 
 ## Çalıştırma (Windows)
 

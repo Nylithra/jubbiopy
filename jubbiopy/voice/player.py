@@ -20,7 +20,7 @@ from .resource import FFMPEG_HELP, AudioResource, find_ffmpeg, yt_dlp_command
 if TYPE_CHECKING:
     from .connection import VoiceConnection
 
-log = logging.getLogger("jubbio.voice")
+log = logging.getLogger("jubbiopy.voice")
 
 # LiveKit ses ayarları (48kHz stereo, 20ms kareler)
 SAMPLE_RATE = 48000
@@ -41,7 +41,7 @@ def _import_rtc():
         from livekit import rtc
     except ImportError as exc:  # pragma: no cover - ortam bağımlı
         raise ImportError(
-            "Ses desteği için 'livekit' paketi gerekli: pip install \"jubbio.py[voice]\""
+            "Ses desteği için 'livekit' paketi gerekli: pip install \"jubbiopy[voice]\""
         ) from exc
     return rtc
 

@@ -9,7 +9,7 @@
 import os
 import time
 
-from jubbio import ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, GatewayIntentBits, HTTPException
+from jubbiopy import ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, GatewayIntentBits, HTTPException
 
 PREFIX_COMMAND = "?partner"
 INVITE_URL = "https://jubbio.com/invite/ac79UK1K"

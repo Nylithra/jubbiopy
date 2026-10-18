@@ -10,7 +10,7 @@ ve ``Client`` shard bilgisini otomatik kullanır.
 import asyncio
 import os
 
-from jubbio import ShardingManager
+from jubbiopy import ShardingManager
 
 
 async def main():

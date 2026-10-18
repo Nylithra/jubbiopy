@@ -5,7 +5,7 @@
 
 import os
 
-from jubbio import (
+from jubbiopy import (
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
@@ -44,7 +44,7 @@ async def on_message(message):
                      {"name": "Sunucu", "value": str(message.guild), "inline": True},
                      {"name": "Üye sayısı", "value": str(message.guild.member_count if message.guild else 0), "inline": True},
                  )
-                 .set_footer(text="Jubbio.py")
+                 .set_footer(text="JubbioPy")
                  .set_timestamp())
         row = ActionRowBuilder().add_components(
             ButtonBuilder().set_custom_id("tesekkur").set_label("Teşekkürler!").set_style(ButtonStyle.Success),

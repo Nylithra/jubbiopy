@@ -1,4 +1,4 @@
-"""Gelişmiş Müzik Botu altyapısı (Jubbio.py).
+"""Gelişmiş Müzik Botu altyapısı (JubbioPy).
 
 Özellikler
 ----------
@@ -32,7 +32,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any, Deque, Dict, List, Optional
 
-from jubbio import (
+from jubbiopy import (
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
@@ -44,7 +44,7 @@ from jubbio import (
     SlashCommandBuilder,
     StringSelectMenuBuilder,
 )
-from jubbio.voice import (
+from jubbiopy.voice import (
     AudioPlayerStatus,
     VoiceConnectionStatus,
     create_audio_player,
@@ -52,7 +52,7 @@ from jubbio.voice import (
     join_voice_channel,
     probe_audio_info,
 )
-from jubbio.voice.resource import yt_dlp_command
+from jubbiopy.voice.resource import yt_dlp_command
 
 log = logging.getLogger("muzik_bot")
 

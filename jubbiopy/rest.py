@@ -15,10 +15,10 @@ import aiohttp
 from ._utils import CamelCaseCompat, iso_timestamp, normalize_embed, to_int_id, to_json
 from .errors import HTTPException
 
-log = logging.getLogger("jubbio.rest")
+log = logging.getLogger("jubbiopy.rest")
 
 DEFAULT_API_URL = "https://gateway.jubbio.com/api/v1"
-USER_AGENT = "JubbioBot/1.0 (+https://jubbio.com) jubbio.py"
+USER_AGENT = "JubbioBot/1.0 (+https://jubbio.com) jubbiopy"
 USER_CACHE_TTL = 5 * 60  # saniye
 
 _USER_MENTION_RE = re.compile(r"<@!?(\d+)>")

@@ -1,4 +1,4 @@
-"""Gelişmiş Moderasyon Botu altyapısı (Jubbio.py).
+"""Gelişmiş Moderasyon Botu altyapısı (JubbioPy).
 
 Özellikler
 ----------
@@ -39,7 +39,7 @@ import time
 from collections import OrderedDict, defaultdict, deque
 from typing import Any, Deque, Dict, List, Optional, Tuple
 
-from jubbio import (
+from jubbiopy import (
     ChannelType,
     Client,
     Colors,

@@ -7,7 +7,7 @@ haberleşir (Node.js ``fork`` + ``process.send`` karşılığı).
 Örnek (``launcher.py``)::
 
     import asyncio
-    from jubbio import ShardingManager
+    from jubbiopy import ShardingManager
 
     async def main():
         manager = ShardingManager("bot.py", total_shards=2, token="...")

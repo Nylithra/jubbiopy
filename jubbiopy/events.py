@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 
 from ._utils import snake_to_camel
 
-log = logging.getLogger("jubbio")
+log = logging.getLogger("jubbiopy")
 
 Listener = Callable[..., Any]
 

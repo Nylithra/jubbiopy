@@ -5,7 +5,7 @@
 
 import os
 
-from jubbio import (
+from jubbiopy import (
     ActionRowBuilder,
     Client,
     GatewayIntentBits,

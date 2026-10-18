@@ -135,7 +135,7 @@ async def server():
 
 @pytest.fixture
 async def client(server):
-    from jubbio import Client, GatewayIntentBits
+    from jubbiopy import Client, GatewayIntentBits
 
     bot = Client(
         intents=[GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],

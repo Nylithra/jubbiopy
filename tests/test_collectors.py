@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from jubbio import CollectorEnded, MessageCollector, TextChannel, await_messages
+from jubbiopy import CollectorEnded, MessageCollector, TextChannel, await_messages
 
 from .conftest import APP_ID, until
 
@@ -59,7 +59,7 @@ async def test_idle_and_async_iteration(client, server):
 
 async def test_message_component_collector(client, server):
     await client.login("t")
-    from jubbio import Message
+    from jubbiopy import Message
 
     message = Message(client, {"id": "77", "channel_id": "300", "guild_id": "200"})
     waiter = asyncio.get_running_loop().create_task(message.await_message_component(time=3))

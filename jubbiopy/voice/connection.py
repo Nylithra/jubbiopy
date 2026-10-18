@@ -14,7 +14,7 @@ from .enums import VoiceConnectionStatus
 if TYPE_CHECKING:
     from .player import AudioPlayer
 
-log = logging.getLogger("jubbio.voice")
+log = logging.getLogger("jubbiopy.voice")
 
 AdapterCreator = Callable[[Any], Any]
 

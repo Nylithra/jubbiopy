@@ -11,7 +11,7 @@ import wave
 
 import pytest
 
-from jubbio.voice import (
+from jubbiopy.voice import (
     AudioPlayerStatus,
     VoiceConnectionStatus,
     create_audio_player,
@@ -20,8 +20,8 @@ from jubbio.voice import (
     get_voice_connection,
     join_voice_channel,
 )
-from jubbio.voice import player as player_module
-from jubbio.voice.player import FRAME_SIZE, _apply_volume
+from jubbiopy.voice import player as player_module
+from jubbiopy.voice.player import FRAME_SIZE, _apply_volume
 
 from .conftest import until
 
@@ -177,7 +177,7 @@ def test_yt_dlp_command_resolution(monkeypatch):
     import importlib.util
     import sys
 
-    from jubbio.voice import resource
+    from jubbiopy.voice import resource
 
     monkeypatch.delenv("YTDLP_PATH", raising=False)
     monkeypatch.setattr(resource.shutil, "which", lambda name: None)
@@ -199,7 +199,7 @@ def test_yt_dlp_command_resolution(monkeypatch):
 
 
 def test_ffmpeg_missing_message(monkeypatch):
-    from jubbio.voice import resource
+    from jubbiopy.voice import resource
 
     monkeypatch.delenv("FFMPEG_PATH", raising=False)
     monkeypatch.setattr(resource.shutil, "which", lambda name: None)

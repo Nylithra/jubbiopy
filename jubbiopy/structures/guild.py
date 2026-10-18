@@ -39,7 +39,7 @@ class Guild(CamelCaseCompat):
 
     @property
     def voice_adapter_creator(self):
-        """``jubbio.voice.join_voice_channel`` için ses adaptörü."""
+        """``jubbiopy.voice.join_voice_channel`` için ses adaptörü."""
         return self.client.voice.adapters.get(self.id)
 
     def get_channel(self, channel_id: str):

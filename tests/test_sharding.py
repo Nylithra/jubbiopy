@@ -6,7 +6,7 @@ import asyncio
 import os
 import textwrap
 
-from jubbio import ShardClientUtil, ShardingManager
+from jubbiopy import ShardClientUtil, ShardingManager
 
 from .conftest import until
 
@@ -17,7 +17,7 @@ async def test_sharding_manager(server, tmp_path, monkeypatch):
     bot = tmp_path / "bot.py"
     bot.write_text(textwrap.dedent("""
         import asyncio, os
-        from jubbio import Client
+        from jubbiopy import Client
 
         async def main():
             client = Client(intents=1, gateway_url=os.environ["FAKE_GW"], api_url=os.environ["FAKE_API"])

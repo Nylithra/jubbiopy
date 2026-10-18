@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from jubbio import (
+from jubbiopy import (
     ButtonInteraction,
     CommandInteraction,
     EmbedBuilder,

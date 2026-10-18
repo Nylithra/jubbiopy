@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from jubbio import REST, EmbedBuilder, File, HTTPException
+from jubbiopy import REST, EmbedBuilder, File, HTTPException
 
 
 @pytest.fixture

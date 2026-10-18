@@ -4,7 +4,7 @@ from __future__ import annotations
 
 
 class JubbioError(Exception):
-    """Tüm Jubbio.py hatalarının temel sınıfı."""
+    """Tüm JubbioPy hatalarının temel sınıfı."""
 
 
 class HTTPException(JubbioError):

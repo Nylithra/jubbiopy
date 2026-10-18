@@ -27,7 +27,7 @@ from .structures.interaction import _StubGuild, create_interaction
 from .structures.message import Message
 from .structures.user import User
 
-log = logging.getLogger("jubbio.client")
+log = logging.getLogger("jubbiopy.client")
 
 DEFAULT_GATEWAY_URL = "wss://realtime.jubbio.com/ws/bot"
 
@@ -51,7 +51,7 @@ IntentsLike = Union[int, Iterable[Union[int, GatewayIntentBits]]]
 
 
 class VoiceAdapter:
-    """``jubbio.voice`` ile gateway arasındaki köprü (adaptör uygulaması)."""
+    """``jubbiopy.voice`` ile gateway arasındaki köprü (adaptör uygulaması)."""
 
     def __init__(self, client: "Client", guild_id: str) -> None:
         self._client = client

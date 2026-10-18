@@ -1,11 +1,11 @@
 """Jubbio ses desteği (``@jubbio/voice`` karşılığı, LiveKit altyapısı).
 
-Kurulum: ``pip install "jubbio.py[voice]" yt-dlp`` — ses PyAV ile çözülür, ayrı
+Kurulum: ``pip install "jubbiopy[voice]" yt-dlp`` — ses PyAV ile çözülür, ayrı
 FFmpeg kurulumu gerekmez (FFmpeg programı varsa o kullanılır).
 
 Örnek::
 
-    from jubbio.voice import join_voice_channel, create_audio_player, create_audio_resource
+    from jubbiopy.voice import join_voice_channel, create_audio_player, create_audio_resource
 
     connection = join_voice_channel(
         channel_id="123456789",

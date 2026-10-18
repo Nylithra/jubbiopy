@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from jubbio import (
+from jubbiopy import (
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,

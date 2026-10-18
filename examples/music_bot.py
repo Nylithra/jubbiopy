@@ -1,4 +1,4 @@
-"""Müzik botu örneği. Gerekenler: ``pip install "jubbio.py[voice]" yt-dlp`` (FFmpeg kurmak gerekmez).
+"""Müzik botu örneği. Gerekenler: ``pip install "jubbiopy[voice]" yt-dlp`` (FFmpeg kurmak gerekmez).
 
 Komutlar: /cal <url veya arama>, /duraklat, /devam, /durdur, /ayril
 
@@ -7,8 +7,8 @@ Komutlar: /cal <url veya arama>, /duraklat, /devam, /durdur, /ayril
 
 import os
 
-from jubbio import Client, Colors, EmbedBuilder, GatewayIntentBits, SlashCommandBuilder
-from jubbio.voice import (
+from jubbiopy import Client, Colors, EmbedBuilder, GatewayIntentBits, SlashCommandBuilder
+from jubbiopy.voice import (
     AudioPlayerStatus,
     create_audio_player,
     create_audio_resource_from_url,

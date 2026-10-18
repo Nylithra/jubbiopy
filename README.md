@@ -1,37 +1,76 @@
-<p align="center">
-  <img src="https://cdn.jubbio.com/assets/logo/jubbio-logo.png" alt="Jubbio" width="70" />
-</p>
-
-<h1 align="center">Jubbio.py</h1>
+<h1 align="center">🐍 JubbioPy</h1>
 
 <p align="center">
-  <strong>Jubbio platformu için Python bot kütüphanesi</strong><br>
-  <code>@jubbio/core</code> + <code>@jubbio/voice</code> → tek paket
+  <strong>Jubbio platformu için modern, asenkron Python bot kütüphanesi</strong><br>
+  <code>@jubbio/core</code> + <code>@jubbio/voice</code> → tek Python paketi
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-%3E%3D3.10-blue" alt="Python">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+  <a href="https://pypi.org/project/jubbiopy/"><img src="https://img.shields.io/pypi/v/jubbiopy?color=blue&label=PyPI" alt="PyPI"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/asyncio-✓-brightgreen" alt="asyncio">
+  <a href="https://github.com/nylithra/jubbiopy/blob/main/LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-green" alt="MIT"></a>
 </p>
 
 <p align="center">Yapımcı: <strong>Lanux Yazılım Hizmetleri</strong></p>
 
+> [!IMPORTANT]
+> **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri tarafından
+> geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
+> onaylanmamıştır. Resmi Python paketi [`jubbio.py`](https://pypi.org/project/jubbio.py/) (Jubbio Community)
+> ayrı bir projedir. İki paket de farklı isimlerle kurulur ve import edilir (`jubbio` ≠ `jubbiopy`),
+> bu yüzden aynı ortamda çakışmazlar.
+
 ---
 
-Jubbio.py, resmi JavaScript kütüphaneleri [`@jubbio/core`](https://www.npmjs.com/package/@jubbio/core)
-ve [`@jubbio/voice`](https://www.npmjs.com/package/@jubbio/voice)'un **tek bir pakette birleşmiş**
-Python karşılığıdır. Aynı gateway protokolünü, aynı REST uç noktalarını ve aynı
-olay isimlerini kullanır; `asyncio` üzerine kuruludur.
+## 📑 İçindekiler
 
-## Kurulum
+- [Neden JubbioPy?](#-neden-jubbiopy)
+- [Kurulum](#-kurulum)
+- [Hızlı Başlangıç](#-hızlı-başlangıç)
+- [Hazır Botlar](#-hazır-botlar)
+- [Kullanım Kılavuzu](#-kullanım-kılavuzu)
+  - [İstemci ve Olaylar](#istemci-ve-olaylar) · [Builder'lar](#builderlar) · [Etkileşimler](#etkileşimler)
+  - [Collector'lar](#collectorlar) · [Ses](#ses) · [REST API](#rest-api) · [Sharding](#sharding)
+- [JS'den Python'a Geçiş](#-jsden-pythona-geçiş)
+- [Sık Karşılaşılan Sorunlar](#-sık-karşılaşılan-sorunlar)
+- [Proje Yapısı](#-proje-yapısı)
+- [Geliştirme ve Katkı](#-geliştirme-ve-katkı)
+- [Lisans](#-lisans)
+
+## ✨ Neden JubbioPy?
+
+JubbioPy, Jubbio'nun JavaScript kütüphaneleri [`@jubbio/core`](https://www.npmjs.com/package/@jubbio/core)
+ve [`@jubbio/voice`](https://www.npmjs.com/package/@jubbio/voice)'un **tek pakette birleşmiş** Python
+karşılığıdır. Aynı gateway protokolünü, aynı REST uç noktalarını ve aynı olay isimlerini kullanır.
+
+| | |
+|---|---|
+| 🔌 **Gateway** | WebSocket bağlantısı, heartbeat, otomatik yeniden bağlanma, anlaşılır Türkçe hata mesajları |
+| 🌐 **REST API** | Mesaj, üye, rol, kanal, davet, webhook, slash komut — JS kütüphanesindeki tüm uç noktalar |
+| ⚡ **Etkileşimler** | Slash komutlar, alt komutlar, butonlar, seçim menüleri, modal formlar, otomatik tamamlama |
+| 📦 **Builder'lar** | Embed, Button, ActionRow, SelectMenu, Modal, SlashCommand |
+| 🔄 **Collector'lar** | Mesaj / tepki / buton bekleme, `async for` desteği |
+| 🎵 **Ses** | LiveKit üzerinden müzik çalma, YouTube/SoundCloud (yt-dlp), **FFmpeg kurmadan** (PyAV) |
+| 🎯 **Sharding** | Çoklu süreç desteği, shard'lar arası `broadcast_eval` |
+| 🔁 **JS uyumluluğu** | `setTitle`, `deferReply`, `createMessage`... JS isimleri de çalışır, kod satır satır taşınabilir |
+| 🧪 **Test edilmiş** | Sahte Jubbio sunucusuna karşı uçtan uca testler |
+
+## 📥 Kurulum
+
+Python **3.10 veya üstü** gerekir.
 
 ```bash
-pip install jubbio.py            # çekirdek (gateway, REST, builder'lar, sharding)
-pip install "jubbio.py[voice]"   # + ses desteği (LiveKit)
+pip install jubbiopy                    # çekirdek: gateway, REST, builder'lar, sharding
+pip install "jubbiopy[voice]" yt-dlp    # + ses desteği (müzik botları için)
 ```
 
-Kaynaktan kurmak için:
+Ses için **ayrıca FFmpeg kurmanız gerekmez**: `[voice]` paketi, FFmpeg kütüphanelerini içinde getiren
+[PyAV](https://pypi.org/project/av/)'ı kurar. Sistemde FFmpeg programı varsa o kullanılır.
+`yt-dlp` sadece YouTube / SoundCloud gibi sitelerden çalmak için gereklidir.
+
+<details>
+<summary><b>Kaynaktan kurulum (en güncel sürüm)</b></summary>
 
 ```bash
 git clone https://github.com/nylithra/jubbiopy.git
@@ -39,22 +78,22 @@ cd jubbiopy
 pip install -e ".[voice]"
 ```
 
-Ses desteği için ayrıca kurulum **gerekmez**: `[voice]` paketi ses çözümleme için
-[PyAV](https://pypi.org/project/av/)'ı (FFmpeg kütüphaneleri içinde gelir) kurar.
-YouTube / SoundCloud için yt-dlp'yi de pip ile kurun:
+Windows'ta GitHub'dan zip indirdiyseniz, `pyproject.toml` dosyasının olduğu klasörde:
 
-```bash
-pip install "jubbio.py[voice]" yt-dlp
+```bat
+python -m pip install -e ".[voice]"
 ```
 
-Sistemde **FFmpeg programı** kuruluysa o kullanılır, yoksa otomatik olarak PyAV'a geçilir.
-Seçimi elle yapmak için: `create_audio_player(decoder="pyav")` veya `decoder="ffmpeg"`.
+`-e`'den sonraki **nokta** (`.`) "bu klasör" demektir, unutmayın.
+</details>
 
-## Hızlı Başlangıç
+## 🚀 Hızlı Başlangıç
+
+`bot.py` adında bir dosya oluşturun:
 
 ```python
 import os
-from jubbio import Client, GatewayIntentBits
+from jubbiopy import Client, GatewayIntentBits
 
 client = Client(intents=[
     GatewayIntentBits.Guilds,
@@ -69,24 +108,47 @@ async def on_ready(c):
 @client.on("messageCreate")
 async def on_message(message):
     if message.content == "!ping":
-        await message.reply("🏓 Pong!")
-
-@client.on("interactionCreate")
-async def on_interaction(interaction):
-    if not interaction.is_command():
-        return
-    if interaction.command_name == "merhaba":
-        await interaction.reply("Merhaba! 👋")
+        await message.reply(f"🏓 Pong! ({client.ping} ms)")
 
 client.run(os.environ["BOT_TOKEN"])
 ```
 
-Kendi `asyncio` döngünüz varsa `client.run()` yerine `await client.start(token)` veya
-`await client.login(token)` (READY gelince döner, bağlantı arka planda sürer) kullanabilirsiniz.
+Token'ı ortam değişkeni olarak verip çalıştırın:
 
-Daha fazla örnek: [`examples/`](examples/) — temel bot, slash komutlar/modal/collector, müzik botu, sharding.
+```bat
+:: Windows (cmd)
+set BOT_TOKEN=tokeniniz
+python bot.py
+```
 
-## İstemci Seçenekleri
+```bash
+# Linux / macOS
+BOT_TOKEN=tokeniniz python bot.py
+```
+
+> 🔒 Token'ı koda yazmayın ve kimseyle paylaşmayın. Token'ı ele geçiren kişi botunuzu tamamen kontrol eder.
+
+## 🤖 Hazır Botlar
+
+[`examples/`](https://github.com/nylithra/jubbiopy/tree/main/examples) klasöründe doğrudan çalıştırılabilen,
+Türkçe botlar bulunur. Her birinin klasöründe ayrıntılı bir kurulum kılavuzu vardır.
+
+| Bot | Özellikler |
+|---|---|
+| 🎫 [**Ticket Botu**](https://github.com/nylithra/jubbiopy/tree/main/examples/ticket_bot) | Kategori menülü panel, form, özel kanal, sahiplenme, kullanıcı ekle/çıkar, mesaj dökümü (.txt), hoş geldin / ayrılma mesajları, oto-rol |
+| 🎵 [**Müzik Botu**](https://github.com/nylithra/jubbiopy/tree/main/examples/muzik_bot) | Şarkı sırası, çalma listesi, arama menüsü, butonlu panel, döngü, karıştırma, ses ayarı, DJ rolü, 24/7 modu |
+| 🛡️ [**Moderasyon Botu**](https://github.com/nylithra/jubbiopy/tree/main/examples/moderasyon_bot) | Ban (süreli), kick, susturma, uyarı sistemi ve otomatik cezalar, vaka kayıtları, sicil, toplu silme, kanal kilidi, AutoMod, mesaj ve giriş/çıkış kayıtları |
+| 🤝 [**Partner Botu**](https://github.com/nylithra/jubbiopy/blob/main/examples/partner_bot.py) | `?partner` yazınca butonlu tanıtım embed'i |
+| 📚 [Basit örnekler](https://github.com/nylithra/jubbiopy/tree/main/examples) | `basic_bot.py`, `slash_commands.py`, `music_bot.py`, `sharding_launcher.py` |
+
+```bat
+set BOT_TOKEN=tokeniniz
+python examples\ticket_bot\bot.py
+```
+
+## 📖 Kullanım Kılavuzu
+
+### İstemci ve Olaylar
 
 ```python
 client = Client(
@@ -99,9 +161,10 @@ client = Client(
 )
 ```
 
-## Olaylar
+`client.run(token)` en basit yoldur. Kendi `asyncio` döngünüz varsa `await client.start(token)` veya
+`await client.login(token)` (READY gelince döner, bağlantı arka planda sürer) kullanın.
 
-Olay isimleri JS kütüphanesiyle **aynıdır**. Üç farklı yazım da kabul edilir:
+Olay isimleri JS kütüphanesiyle **aynıdır** ve üç yazım da kabul edilir:
 
 ```python
 @client.on("messageCreate")          # JS adı
@@ -112,13 +175,13 @@ async def b(message): ...
 
 @client.event                        # discord.py tarzı: fonksiyon adından
 async def on_message_create(message): ...
-```
 
-Dinleyiciler senkron veya `async` olabilir. Belirli bir olayı beklemek için:
-
-```python
+# Bir olayı beklemek
 msg = await client.wait_for("messageCreate", lambda m: m.author.id == "123", timeout=30)
 ```
+
+<details>
+<summary><b>Tüm olaylar</b></summary>
 
 | Olay | Açıklama |
 |------|----------|
@@ -137,13 +200,14 @@ msg = await client.wait_for("messageCreate", lambda m: m.author.id == "123", tim
 | `presenceUpdate` / `typingStart` | Durum / yazıyor |
 | `error` / `debug` | Hata / hata ayıklama bilgisi |
 | `raw` | İşlenmeyen ham gateway olayı |
+</details>
 
-## Builder'lar
+### Builder'lar
 
 ```python
-from jubbio import (EmbedBuilder, Colors, ButtonBuilder, ButtonStyle, ActionRowBuilder,
-                    StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle,
-                    SlashCommandBuilder)
+from jubbiopy import (EmbedBuilder, Colors, ButtonBuilder, ButtonStyle, ActionRowBuilder,
+                      StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle,
+                      SlashCommandBuilder)
 
 embed = (EmbedBuilder()
          .set_title("Merhaba!")
@@ -151,14 +215,15 @@ embed = (EmbedBuilder()
          .set_color(Colors.Blue)            # sayı, "#ff0000", "Red" veya (r, g, b)
          .add_fields({"name": "Alan 1", "value": "Değer 1", "inline": True},
                      {"name": "Alan 2", "value": "Değer 2", "inline": True})
+         .set_thumbnail("https://...")
          .set_footer(text="Alt bilgi")
          .set_timestamp())
-await message.reply(embeds=[embed])
 
 row = ActionRowBuilder().add_components(
-    ButtonBuilder().set_custom_id("buton").set_label("Tıkla!").set_style(ButtonStyle.Primary)
+    ButtonBuilder().set_custom_id("onay").set_label("Onayla").set_style(ButtonStyle.Success),
+    ButtonBuilder().set_label("Site").set_style(ButtonStyle.Link).set_url("https://example.com"),
 )
-await interaction.reply(components=[row])
+await message.channel.send(embeds=[embed], components=[row])
 
 command = (SlashCommandBuilder()
            .set_name("selamla")
@@ -170,30 +235,25 @@ await client.application.commands.set([command])   # global
 await guild.commands.set([command])                # sadece bir sunucu (anında)
 ```
 
-> 💡 **JS'den geçiş:** Tüm metotların JS adları da çalışır — `setTitle`, `addFields`, `setCustomId`,
-> `toJSON`, `isCommand`, `deferReply`, `createMessage`... Otomatik olarak Python karşılığına
-> (`set_title`, `add_fields`, ...) yönlendirilir. Böylece JS kodunu satır satır taşıyabilirsiniz.
-
-## Etkileşimler
+### Etkileşimler
 
 ```python
-from jubbio import File
+from jubbiopy import File
 
 @client.on("interactionCreate")
 async def handler(interaction):
     if interaction.is_command():
-        name = interaction.options.get_string("isim")
         user = interaction.options.get_user("kullanici")
         sub = interaction.options.get_subcommand()
-        await interaction.defer_reply(ephemeral=True)
+        await interaction.defer_reply(ephemeral=True)      # "düşünüyor..."
         await interaction.edit_reply("İşlem tamam!")
-        await interaction.follow_up(content="Ek mesaj", files=[File("rapor.txt", b"...")])
+        await interaction.follow_up("Ek mesaj", files=[File("rapor.txt", b"...")])
 
     elif interaction.is_button():
         await interaction.update(content="Buton tıklandı!", components=[])
 
     elif interaction.is_select_menu():
-        await interaction.reply(f"Seçilen: {interaction.values}")
+        await interaction.reply(f"Seçilen: {interaction.values}", ephemeral=True)
 
     elif interaction.is_modal_submit():
         value = interaction.fields.get_text_input_value("alan_id")
@@ -203,9 +263,11 @@ async def handler(interaction):
         await interaction.respond([{"name": "Seçenek", "value": "secenek"}])
 ```
 
-## Collector'lar
+Butonlarda ve menülerde `await interaction.show_modal(modal)` ile form açabilirsiniz.
 
-> ⚠️ Python sürümünde `time` ve `idle` süreleri **saniye** cinsindendir (JS'de milisaniye).
+### Collector'lar
+
+> ⚠️ `time` ve `idle` süreleri **saniye** cinsindendir (JS'de milisaniye).
 
 ```python
 # Kanalda mesaj bekle
@@ -214,65 +276,58 @@ collected = await message.channel.await_messages(
 
 # Mesajdaki buton tıklamalarını topla
 collector = sent.create_message_component_collector(time=60)
-collector.on("collect", lambda i: print("Tıklandı:", i.custom_id))
-async for interaction in collector:   # veya: await collector.wait()
+async for interaction in collector:
     await interaction.reply("Aldım!", ephemeral=True)
 
 # Tek bir bileşen etkileşimi bekle
 interaction = await sent.await_message_component(time=30)
 ```
 
-## Ses Desteği
+### Ses
 
 ```python
-from jubbio.voice import (join_voice_channel, create_audio_player, create_audio_resource,
-                          create_audio_resource_from_url, probe_audio_info, get_voice_connection,
-                          enters_state, AudioPlayerStatus, VoiceConnectionStatus)
+from jubbiopy.voice import (join_voice_channel, create_audio_player, create_audio_resource_from_url,
+                            probe_audio_info, get_voice_connection, enters_state,
+                            AudioPlayerStatus, VoiceConnectionStatus)
 
-info = await probe_audio_info("https://youtube.com/watch?v=...")   # veya arama metni
-print(info.title, info.duration, info.thumbnail)
-
+info = await probe_audio_info("tarkan kuzu kuzu")      # link veya arama metni
 connection = get_voice_connection(guild_id) or join_voice_channel(
     channel_id=voice_channel_id,
     guild_id=guild_id,
-    adapter_creator=client.voice.adapters.get(guild_id),   # veya guild.voice_adapter_creator
-    self_mute=False,
-    self_deaf=False,
+    adapter_creator=client.voice.adapters.get(guild_id),
 )
 await enters_state(connection, VoiceConnectionStatus.Ready, 20)
 
-player = create_audio_player(behaviors={"no_subscriber": "pause"})   # "pause" | "play" | "stop"
+player = create_audio_player()                          # decoder="auto" | "pyav" | "ffmpeg"
 connection.subscribe(player)
 
 resource = create_audio_resource_from_url(info.url, metadata={"title": info.title})
-resource.set_volume(0.5)          # 0.0 – 2.0, çalarken de değiştirilebilir
+resource.set_volume(0.5)                                # 0.0 – 2.0, çalarken de değişir
 player.play(resource)
 
 player.pause(); player.unpause(); player.stop()
-if player.state.status == AudioPlayerStatus.Playing: ...
-
-connection.disconnect()   # kanaldan ayrıl
-connection.destroy()      # tamamen kapat
-
 player.on("stateChange", lambda old, new: print(old.status, "->", new.status))
-player.on("error", lambda err: print("Hata:", err.message, err.resource))
-connection.on("stateChange", lambda old, new: ...)
+player.on("error", lambda err: print("Hata:", err.message))
+connection.destroy()                                    # kanaldan ayrıl ve kapat
 ```
 
-| `AudioPlayerStatus` | Açıklama | | `VoiceConnectionStatus` | Açıklama |
-|---|---|---|---|---|
-| `Idle` | Bir şey çalmıyor | | `Connecting` | Bağlanıyor |
-| `Buffering` | Yükleniyor | | `Signalling` | Bağlantı bilgisi alınıyor |
-| `Playing` | Çalıyor | | `Ready` | Bağlı ve hazır |
-| `Paused` | Duraklatıldı | | `Disconnected` | Bağlantı koptu |
-| `AutoPaused` | Abone yok, otomatik duraklatıldı | | `Destroyed` | Yok edildi |
+| `AudioPlayerStatus` | | `VoiceConnectionStatus` | |
+|---|---|---|---|
+| `Idle` | Çalmıyor | `Connecting` | Bağlanıyor |
+| `Buffering` | Yükleniyor | `Signalling` | Ses sunucusu bilgisi alınıyor |
+| `Playing` | Çalıyor | `Ready` | Bağlı |
+| `Paused` | Duraklatıldı | `Disconnected` | Koptu |
+| `AutoPaused` | Dinleyici yok | `Destroyed` | Kapatıldı |
 
-FFmpeg / yt-dlp yolları `FFMPEG_PATH` ve `YTDLP_PATH` ortam değişkenleriyle veya
-`create_audio_player(ffmpeg_path=..., yt_dlp_path=...)` ile değiştirilebilir.
+FFmpeg / yt-dlp yolları `FFMPEG_PATH` ve `YTDLP_PATH` ortam değişkenleriyle değiştirilebilir.
 
-## REST API
+### REST API
 
-Tüm uç noktalara `client.rest` ile erişilir. Metot isimleri JS ile birebir aynıdır (snake_case):
+Tüm uç noktalara `client.rest` ile erişilir. Metot isimleri JS ile birebir aynıdır (snake_case).
+Başarısız istekler `jubbiopy.HTTPException` fırlatır (`.status`, `.text`).
+
+<details>
+<summary><b>Tüm REST metotları (örneklerle)</b></summary>
 
 ```python
 # Mesajlar
@@ -293,7 +348,7 @@ await client.rest.timeout_member(guild_id, user_id, 60 * 60 * 1000, "Spam")  # m
 await client.rest.kick_member(guild_id, user_id, "Kural ihlali")
 await client.rest.ban_member(guild_id, user_id, delete_message_days=7, reason="Ağır ihlal")
 await client.rest.unban_member(guild_id, user_id)
-await client.rest.edit_member(guild_id, user_id, {"nick": "Yeni Takma Ad", "roles": ["rol1", "rol2"]})
+await client.rest.edit_member(guild_id, user_id, {"nick": "Yeni Takma Ad"})
 await client.rest.add_member_role(guild_id, user_id, role_id)
 await client.rest.remove_member_role(guild_id, user_id, role_id)
 
@@ -314,7 +369,6 @@ guild = await client.rest.get_guild(guild_id)
 bans = await client.rest.get_bans(guild_id)
 invite = await client.rest.create_invite(guild_id, channel_id, {"max_age": 86400, "max_uses": 10})
 user = await client.rest.get_user(user_id)
-me = await client.rest.get_current_user()
 webhook = await client.rest.create_webhook(guild_id, channel_id, {"name": "Webhook'um"})
 
 # Slash komutları
@@ -326,59 +380,122 @@ await client.rest.delete_global_command(command_id)
 await client.rest.get("/bot/guilds/123/channels")
 await client.rest.post("/bot/guilds/123/channels", {"name": "kanal", "type": 2})
 ```
+</details>
 
-Başarısız istekler `jubbio.HTTPException` fırlatır (`.status`, `.text`).
-
-## Sharding
+### Sharding
 
 ```python
 import asyncio
-from jubbio import ShardingManager
+from jubbiopy import ShardingManager
 
 async def main():
     manager = ShardingManager("bot.py", total_shards=2, token="BOT_TOKEN")
     manager.on("shardReady", lambda shard_id: print(f"Shard {shard_id} hazır"))
     await manager.spawn()
-    print(await manager.fetch_client_values("guilds.size"))      # her shard'dan değer
-    print(await manager.broadcast_eval("len(client.guilds)"))   # Python ifadesi
+    print(await manager.broadcast_eval("len(client.guilds)"))   # her shard'dan değer
     await manager.wait()
 
 asyncio.run(main())
 ```
 
-Her shard ayrı bir Python sürecinde çalışır; `bot.py` içindeki `Client` shard bilgisini
-(`SHARD_ID`, `SHARD_COUNT`) ortamdan otomatik alır, token `JUBBIO_TOKEN` değişkenindedir.
-Shard içinden yöneticiye `client.shard.send(...)` / `await client.shard.broadcast_eval(...)` ile ulaşılır.
+Her shard ayrı bir Python sürecinde çalışır. `bot.py` içindeki `Client` shard bilgisini
+(`SHARD_ID`, `SHARD_COUNT`) ortamdan otomatik alır; token `JUBBIO_TOKEN` değişkenindedir.
 
-## JS'den Python'a Geçiş Notları
+## 🔁 JS'den Python'a Geçiş
 
-| JavaScript (`@jubbio/core` / `@jubbio/voice`) | Python (`jubbio`) |
+| JavaScript (`@jubbio/core` / `@jubbio/voice`) | Python (`jubbiopy`) |
 |---|---|
-| `import { Client } from '@jubbio/core'` | `from jubbio import Client` |
-| `import { joinVoiceChannel } from '@jubbio/voice'` | `from jubbio.voice import join_voice_channel` |
+| `import { Client } from '@jubbio/core'` | `from jubbiopy import Client` |
+| `import { joinVoiceChannel } from '@jubbio/voice'` | `from jubbiopy.voice import join_voice_channel` |
 | `client.login(token)` (Promise) | `client.run(token)` veya `await client.login(token)` |
 | `client.on('messageCreate', fn)` | `@client.on("messageCreate")` (aynı isimler) |
-| `interaction.deferReply()` | `await interaction.defer_reply()` (`deferReply` de çalışır) |
-| `message.reply({ content, embeds })` | `await message.reply(content, embeds=[...])` veya `reply({...})` |
+| `interaction.deferReply()` | `await interaction.defer_reply()` (`deferReply` da çalışır) |
+| `message.reply({ content, embeds })` | `await message.reply(content, embeds=[...])` |
 | `{ name, data: Buffer }` dosyalar | `File("ad.txt", b"...")` veya `{"name": ..., "data": ...}` |
 | `EmbedBuilder.from(x)` | `EmbedBuilder.from_(x)` |
 | Collector `time` / `idle` (ms) | **saniye** |
-| `rest.timeoutMember(..., duration)` (ms) | `rest.timeout_member(..., duration)` (ms, aynı) |
-| `client.guilds.cache.get(id)` | `client.guilds.get(id)` (`.cache` de çalışır) |
+| `client.guilds.cache.get(id)` | `client.guilds.get(id)` (`.cache` da çalışır) |
 | `bigint` izin bitleri | Python `int` |
 
-JS sürümüne göre küçük iyileştirmeler:
-- Ses bağlantısı sadece **bot'un kendi** ses durumu değişince kopar (JS'de sunucudaki herhangi bir kullanıcı ayrılınca kopuyordu).
-- `DMChannel.send()` doğru uç noktayı (`/bot/dm/{kanal}`) kullanır.
-- Tepki olayları (`messageReactionAdd`/`Remove`) yayınlanır, böylece `ReactionCollector` çalışır.
+<details>
+<summary><b>JS sürümüne göre iyileştirmeler</b></summary>
+
+- Ses bağlantısı sadece **bot'un kendi** ses durumu değişince kopar (JS'de sunucudaki herhangi biri ayrılınca kopuyordu).
+- `DMChannel.send()` doğru uç noktayı kullanır.
+- Tepki olayları yayınlanır, böylece `ReactionCollector` çalışır.
 - Shard'lar arası `eval` / `broadcast_eval` gerçekten çalışır.
 - Alt komut seçenekleri (`get_subcommand()` + iç içe seçenekler) desteklenir.
-- Duraklatma sırasında ses verisi kaybolmaz.
-- Hata ayıklama çıktısı `print` yerine `logging` (`jubbio`, `jubbio.rest`, `jubbio.voice` logger'ları) ile verilir.
+- Duraklatma sırasında ses verisi kaybolmaz; FFmpeg kurmadan ses çalınabilir (PyAV).
+- Hata ayıklama çıktısı `print` yerine `logging` ile verilir (`jubbiopy`, `jubbiopy.rest`, `jubbiopy.voice`).
+</details>
 
-## Geliştirme
+## 🩺 Sık Karşılaşılan Sorunlar
+
+<details>
+<summary><b><code>API Error 403: Insufficient permissions</code></b></summary>
+
+Bot'un o işlem için izni yok. Sunucu ayarlarında bot'un rolüne gereken izinleri verin
+(mesaj için **Kanalı Görüntüle**, **Mesaj Gönder**, embed için **Bağlantı Yerleştir**) ve
+kanalın kendi izin ayarlarının bunu engellemediğini kontrol edin.
+</details>
+
+<details>
+<summary><b>Bot mesajlara cevap vermiyor</b></summary>
+
+- `GatewayIntentBits.MessageContent` intent'ini eklediğinizden emin olun.
+- Jubbio'nun bot ayarlarında mesaj içeriği (Message Content) için bir izin varsa açık olmalıdır.
+- Hata ayrıntıları için: `client.run(token, log_level=logging.DEBUG)`
+</details>
+
+<details>
+<summary><b><code>Gateway bağlantısı reddedildi [4004]</code></b></summary>
+
+Token geçersiz. Token'ı kopyalarken başına/sonuna boşluk eklenmediğinden emin olun
+ve gerekirse yeni bir token oluşturun.
+</details>
+
+<details>
+<summary><b><code>-e option requires 1 argument</code></b></summary>
+
+Komutun sonuna nokta koyun: `python -m pip install -e .`
+</details>
+
+<details>
+<summary><b>Müzik: <code>yt-dlp bulunamadı</code> / <code>[WinError 2]</code></b></summary>
+
+`python -m pip install yt-dlp` ile kurun. JubbioPy, PATH'te olmasa bile yt-dlp'yi otomatik bulur.
+Yine de bulamazsa: `set YTDLP_PATH=C:\...\yt-dlp.exe`
+</details>
+
+<details>
+<summary><b>Müzik: ses çözücü bulunamadı</b></summary>
+
+`python -m pip install av` (veya `pip install "jubbiopy[voice]"`). FFmpeg kurmanız gerekmez.
+</details>
+
+## 🗂️ Proje Yapısı
+
+```
+jubbiopy/
+├── client.py          # Client: gateway bağlantısı, olaylar, önbellek
+├── rest.py            # REST API istemcisi
+├── events.py          # asyncio olay yayıcı
+├── enums.py           # Intent'ler, kanal tipleri, izin bitleri...
+├── structures/        # User, Guild, GuildMember, Message, kanallar, etkileşimler
+├── builders/          # Embed, Button, SelectMenu, Modal, SlashCommand
+├── utils/             # Collector'lar, Formatters, BitField, SnowflakeUtil
+├── managers/          # Slash komut yöneticisi
+├── sharding/          # ShardingManager
+└── voice/             # Ses bağlantısı, AudioPlayer, kaynaklar
+examples/              # Hazır botlar ve örnekler
+tests/                 # Sahte Jubbio sunucusuna karşı testler
+```
+
+## 🛠️ Geliştirme ve Katkı
 
 ```bash
+git clone https://github.com/nylithra/jubbiopy.git
+cd jubbiopy
 pip install -e ".[voice,dev]"
 pytest
 ```
@@ -386,6 +503,12 @@ pytest
 Testler sahte bir Jubbio gateway + REST sunucusuna karşı çalışır (gerçek token gerekmez);
 ses testleri FFmpeg / PyAV ile gerçek çözümleme yapar.
 
-## Lisans
+Hata bildirimi ve öneriler için [GitHub Issues](https://github.com/nylithra/jubbiopy/issues) kullanın.
+Hata bildirirken Python sürümünüzü, işletim sisteminizi ve konsoldaki hata çıktısının tamamını ekleyin
+(**token'ınızı eklemeyin**).
 
-MIT © Lanux Yazılım Hizmetleri
+## 📄 Lisans
+
+[MIT](https://github.com/nylithra/jubbiopy/blob/main/LICENSE) © Lanux Yazılım Hizmetleri
+
+JubbioPy bağımsız bir projedir; "Jubbio" adı ve logosu sahiplerine aittir.

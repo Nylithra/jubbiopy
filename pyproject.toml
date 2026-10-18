@@ -3,9 +3,9 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jubbio.py"
+name = "jubbiopy"
 version = "1.0.0"
-description = "Jubbio platformu için Python bot kütüphanesi (@jubbio/core + @jubbio/voice tek pakette)"
+description = "Jubbio için resmi olmayan Python bot kütüphanesi (@jubbio/core + @jubbio/voice tek pakette)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -36,10 +36,10 @@ voice = ["livekit>=0.12", "av>=12"]
 dev = ["pytest>=8", "pytest-asyncio>=0.23"]
 
 [tool.setuptools.packages.find]
-include = ["jubbio*"]
+include = ["jubbiopy*"]
 
 [tool.setuptools.package-data]
-jubbio = ["py.typed"]
+jubbiopy = ["py.typed"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
