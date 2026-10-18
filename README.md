@@ -17,9 +17,7 @@
 > [!IMPORTANT]
 > **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri tarafından
 > geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
-> onaylanmamıştır. Resmi Python paketi [`jubbio.py`](https://pypi.org/project/jubbio.py/) (Jubbio Community)
-> ayrı bir projedir. İki paket de farklı isimlerle kurulur ve import edilir (`jubbio` ≠ `jubbiopy`),
-> bu yüzden aynı ortamda çakışmazlar.
+> onaylanmamıştır. 
 
 ---
 
