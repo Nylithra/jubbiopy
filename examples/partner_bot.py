@@ -9,7 +9,7 @@
 import os
 import time
 
-from jubbio import ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, GatewayIntentBits
+from jubbio import ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, GatewayIntentBits, HTTPException
 
 PREFIX_COMMAND = "?partner"
 INVITE_URL = "https://jubbio.com/invite/ac79UK1K"
@@ -72,6 +72,27 @@ def join_button() -> ActionRowBuilder:
     )
 
 
+async def send_partner(message) -> None:
+    """Önce embed + buton dener; izin hatasında daha basit biçimlere düşer ve sebebi yazar."""
+    attempts = [
+        ("embed + buton", {"embeds": [partner_embed()], "components": [join_button()]}),
+        ("sadece embed", {"embeds": [partner_embed()]}),
+        ("düz metin", {"content": f"{TITLE}\n\n{DESCRIPTION}\n\n{FOOTER}"}),
+    ]
+    for index, (name, payload) in enumerate(attempts):
+        try:
+            await message.channel.send(**payload)
+            if index:
+                print(f"ℹ️ Mesaj '{name}' olarak gönderildi; önceki biçimler için bot'un izni yok.")
+            return
+        except HTTPException as exc:
+            print(f"⚠️ '{name}' gönderilemedi: HTTP {exc.status} {exc.text}")
+            if exc.status != 403:
+                return
+    print("❌ Bot bu kanala hiç mesaj gönderemiyor. Bot rolüne bu kanalda 'Mesaj Gönder' "
+          "(ve embed için 'Bağlantı Yerleştir') iznini verin.")
+
+
 def create_client(**options) -> Client:
     client = Client(intents=[GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages,
                              GatewayIntentBits.MessageContent], **options)
@@ -89,7 +110,7 @@ def create_client(**options) -> Client:
         if now - last_used.get(message.channel_id, 0) < COOLDOWN:
             return  # spam'i önle
         last_used[message.channel_id] = now
-        await message.channel.send(embeds=[partner_embed()], components=[join_button()])
+        await send_partner(message)
 
     return client
 

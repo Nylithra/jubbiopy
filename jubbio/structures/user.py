@@ -17,7 +17,8 @@ class User(CamelCaseCompat):
         self.client = client
         # Snowflake hassasiyet sorunu nedeniyle ID her zaman string tutulur
         self.id: str = str(data.get("id"))
-        self.username: str = data.get("username") or f"User_{self.id}"
+        self.username: str = (data.get("username") or data.get("name") or data.get("display_name")
+                              or data.get("displayName") or f"User_{self.id}")
         self.display_name: Optional[str] = data.get("display_name")
         self.avatar_url: Optional[str] = data.get("avatar_url")
         self.bot: bool = bool(data.get("bot") or False)
