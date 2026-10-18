@@ -14,6 +14,7 @@
 
 <p align="center">Yapımcı: <strong>Lanux Yazılım Hizmetleri</strong></p>
 
+
 > [!IMPORTANT]
 > **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri tarafından
 > geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
