@@ -12,48 +12,31 @@ import time
 from jubbiopy import ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, EmbedBuilder, GatewayIntentBits, HTTPException
 
 PREFIX_COMMAND = "?partner"
-INVITE_URL = "https://jubbio.com/invite/ac79UK1K"
+INVITE_URL = "https://jubbio.com/invite/J32qroJv"
 COOLDOWN = 30  # aynı kanalda tekrar kullanmak için bekleme (sn)
 COLOR = 0x00B4D8
 
-TITLE = ":shield: JUBBIO | SİBER GÜVENLİK & BİLİŞİM TOPLULUĞU :computer:"
+TITLE = "🚀 Jubbio Devs: Jubbio Ekosistemini Birlikte Şekillendiriyoruz!"
 
-DESCRIPTION = f"""İnternette güvende kalmak, teknolojiyi daha iyi anlamak ve bilişim dünyasında kendini geliştirmek ister misin? O hâlde doğru yerdesin!
+DESCRIPTION = f"""Jubbio için bot geliştirmek hiç bu kadar kolay ve esnek olmamıştı!
 
-:rotating_light: **Siber tehditlere karşı bilinçlen, teknolojiyi öğren, birlikte gelişelim!**
+Jubbio Devs, Jubbio.js kütüphanesini farklı yazılım dillerine uyarlayan ve geliştiricilere güçlü, optimize edilmiş bot altyapıları sunan bağımsız bir toplulukdur. Amacımız, hangi dili kullanırsanız kullanın Jubbio platformunda hayal ettiğiniz botları ve entegrasyonları sorunsuz bir şekilde hayata geçirmenizi sağlamak.
 
-:globe_with_meridians: **Sunucumuzda seni neler bekliyor?**
+:fire: JubbioPY Yayında!
 
-:closed_lock_with_key: **Siber Güvenlik Rehberi**
-- Güncel dolandırıcılık yöntemleri ve internet tehditleri
-- Oltalama (phishing) saldırılarını tanıma ve korunma yolları
-- Sahte siteleri, şüpheli bağlantıları ve tehlikeli mesajları ayırt etme
-- Hesap güvenliği, gizlilik ve dijital güvenlik önerileri
+Python tutkunları müjde! JubbioPY kütüphanemiz tamamlandı ve şu anda yayında. Artık Python’ın sade ve güçlü yapısıyla Jubbio botlarınızı yazabileceksiniz!
 
-:computer: **Bilişim ve Teknik Destek**
-- Bilgisayar, yazılım ve teknoloji sorunlarına çözüm arama
-- Karşılaştığın hataları paylaşma ve birlikte çözüm üretme
-- Teknik sorularını sorabileceğin, bilgi alışverişi yapabileceğin bir ortam
+:sparkles: Jubbio Devs Size Ne Sunuyor?
 
-:robot_face: **Bot Geliştirme ve Projeler**
-- Bot geliştirmeye ilgi duyanlar için bilgi paylaşımı
-- Kodlama, otomasyon ve proje geliştirme üzerine fikir alışverişi
-- Topluluk büyüdükçe üyelerin kendi botlarını oluşturmasına yardımcı olacak altyapı ve rehberlik çalışmaları
+:hammer_and_wrench: Çoklu Dil Desteği: Jubbio.js mantığını Python ve diğer dillere taşıyarak özgürce kod yazmanızı sağlıyoruz.
 
-:books: **Birlikte Öğren, Birlikte Geliş!**
+:package: Hazır Bot Altyapıları: Sıfırdan başlamanıza gerek kalmadan, doğrudan projenize odaklanabileceğiniz hazır şablonlar.
 
-İster bilişime yeni başlamış ol, ister deneyimli bir teknoloji meraklısı… Sorularını sorabileceğin, bildiklerini paylaşabileceğin ve yeni şeyler öğrenebileceğin bir topluluğun parçası ol.
+:handshake: Geliştirici Topluluğu: Sorularınızı sorabileceğiniz, fikir alışverişinde bulunabileceğiniz ve projenizi tanıtabileceğiniz aktif bir ortam.
 
-Burada amaç sadece sohbet etmek değil; bilgiyi paylaşmak, sorunlara çözüm bulmak ve teknolojiyi daha bilinçli kullanmak.
+:pushpin: Siz de Jubbio ekosisteminde iz bırakmak ve JubbioPY duyurusunu kaçırmamak için topluluğumuza katılın!"""
 
-:fire: Sen de bu topluluğun bir parçası olmak ve gelişimimize katkıda bulunmak istiyorsan aramıza katıl!
-
-:link: **SUNUCUYA KATIL:**
-{INVITE_URL}
-
-:shield: Güvenli internet. :computer: Güçlü bilgi. :handshake: Birlikte gelişen topluluk."""
-
-FOOTER = "JUBBIO — Öğren, keşfet, geliştir!"
+FOOTER = "Jubbio Devs & Lanux Yazılım Hizmetleri"
 
 
 def partner_embed() -> EmbedBuilder:
@@ -83,10 +66,10 @@ async def send_partner(message) -> None:
         try:
             await message.channel.send(**payload)
             if index:
-                print(f"ℹ️ Mesaj '{name}' olarak gönderildi; önceki biçimler için bot'un izni yok.")
+                print(f"Mesaj '{name}' olarak gönderildi; önceki biçimler için bot'un izni yok.")
             return
         except HTTPException as exc:
-            print(f"⚠️ '{name}' gönderilemedi: HTTP {exc.status} {exc.text}")
+            print(f"'{name}' gönderilemedi: HTTP {exc.status} {exc.text}")
             if exc.status != 403:
                 return
     print("❌ Bot bu kanala hiç mesaj gönderemiyor. Bot rolüne bu kanalda 'Mesaj Gönder' "
@@ -100,7 +83,7 @@ def create_client(**options) -> Client:
 
     @client.on("ready")
     async def on_ready(_c):
-        print(f"✅ {client.user.username} hazır! '{PREFIX_COMMAND}' yazınca tanıtım gönderilecek.")
+        print(f"{client.user.username} hazır, '{PREFIX_COMMAND}' yazınca tanıtım gönderilecek.")
 
     @client.on("messageCreate")
     async def on_message(message):
@@ -108,7 +91,7 @@ def create_client(**options) -> Client:
             return
         now = time.monotonic()
         if now - last_used.get(message.channel_id, 0) < COOLDOWN:
-            return  # spam'i önle
+            return  
         last_used[message.channel_id] = now
         await send_partner(message)
 
