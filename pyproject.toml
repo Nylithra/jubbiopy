@@ -3,8 +3,8 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jubbiopy"
-version = "1.0.0"
+name = "jubbio"
+version = "1.0.1"
 description = "Jubbio için resmi olmayan Python bot kütüphanesi (@jubbio/core + @jubbio/voice tek pakette)"
 readme = "README.md"
 requires-python = ">=3.10"

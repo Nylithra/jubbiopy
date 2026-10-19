@@ -1,6 +1,6 @@
 """Jubbio ses desteği (``@jubbio/voice`` karşılığı, LiveKit altyapısı).
 
-Kurulum: ``pip install "jubbiopy[voice]" yt-dlp`` — ses PyAV ile çözülür, ayrı
+Kurulum: ``pip install "jubbio[voice]" yt-dlp`` — ses PyAV ile çözülür, ayrı
 FFmpeg kurulumu gerekmez (FFmpeg programı varsa o kullanılır).
 
 Örnek::

@@ -41,7 +41,7 @@ def _import_rtc():
         from livekit import rtc
     except ImportError as exc:  # pragma: no cover - ortam bağımlı
         raise ImportError(
-            "Ses desteği için 'livekit' paketi gerekli: pip install \"jubbiopy[voice]\""
+            "Ses desteği için 'livekit' paketi gerekli: pip install \"jubbio[voice]\""
         ) from exc
     return rtc
 

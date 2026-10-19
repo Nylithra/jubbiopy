@@ -121,7 +121,12 @@ from .utils.formatters import (
 __title__ = "jubbiopy"
 __author__ = "Lanux Yazılım Hizmetleri"
 __license__ = "MIT"
-__version__ = "1.0.0"
+try:  # Sürüm, kurulu paketin bilgisinden okunur (PyPI ile hep aynı kalır)
+    from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
+    __version__ = _pkg_version("jubbio")
+except PackageNotFoundError:  # kurulmadan, kaynak klasöründen çalıştırılıyorsa
+    __version__ = "1.0.1"
 
 __all__ = [
     # İstemci

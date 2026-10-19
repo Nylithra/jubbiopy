@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/jubbiopy/"><img src="https://img.shields.io/pypi/v/jubbiopy?color=blue&label=PyPI" alt="PyPI"></a>
+  <a href="https://pypi.org/project/jubbio/"><img src="https://img.shields.io/pypi/v/jubbio?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/asyncio-✓-brightgreen" alt="asyncio">
   <a href="https://github.com/nylithra/jubbiopy/blob/main/LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-green" alt="MIT"></a>
@@ -18,8 +18,14 @@
 > **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri tarafından
 > geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
 > onaylanmamıştır. Resmi Python paketi [`jubbio.py`](https://pypi.org/project/jubbio.py/) (Jubbio Community)
-> ayrı bir projedir. İki paket de farklı isimlerle kurulur ve import edilir (`jubbio` ≠ `jubbiopy`),
-> bu yüzden aynı ortamda çakışmazlar.
+> ayrı bir projedir:
+>
+> | | Kurulum | Kod içinde |
+> |---|---|---|
+> | **JubbioPy** (bu proje) | `pip install jubbio` | `from jubbiopy import Client` |
+> | Resmi paket | `pip install jubbio.py` | `import jubbio` |
+>
+> Import adları farklı olduğu için iki paket aynı ortamda çakışmadan kurulabilir.
 
 ---
 
@@ -61,13 +67,15 @@ karşılığıdır. Aynı gateway protokolünü, aynı REST uç noktalarını ve
 Python **3.10 veya üstü** gerekir.
 
 ```bash
-pip install jubbiopy                    # çekirdek: gateway, REST, builder'lar, sharding
-pip install "jubbiopy[voice]" yt-dlp    # + ses desteği (müzik botları için)
+pip install jubbio                     # çekirdek: gateway, REST, builder'lar, sharding
+pip install "jubbio[voice]" yt-dlp     # + ses desteği (müzik botları için)
 ```
 
 Ses için **ayrıca FFmpeg kurmanız gerekmez**: `[voice]` paketi, FFmpeg kütüphanelerini içinde getiren
 [PyAV](https://pypi.org/project/av/)'ı kurar. Sistemde FFmpeg programı varsa o kullanılır.
 `yt-dlp` sadece YouTube / SoundCloud gibi sitelerden çalmak için gereklidir.
+
+> 💡 Kurulum adı **`jubbio`**, kodda kullanılan ad **`jubbiopy`**'dir: `pip install jubbio` → `from jubbiopy import Client`
 
 <details>
 <summary><b>Kaynaktan kurulum (en güncel sürüm)</b></summary>
@@ -470,7 +478,7 @@ Yine de bulamazsa: `set YTDLP_PATH=C:\...\yt-dlp.exe`
 <details>
 <summary><b>Müzik: ses çözücü bulunamadı</b></summary>
 
-`python -m pip install av` (veya `pip install "jubbiopy[voice]"`). FFmpeg kurmanız gerekmez.
+`python -m pip install av` (veya `pip install "jubbio[voice]"`). FFmpeg kurmanız gerekmez.
 </details>
 
 ## 🗂️ Proje Yapısı
