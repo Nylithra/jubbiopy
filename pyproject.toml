@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jubbio"
-version = "1.0.1"
+version = "1.0.2"
 description = "Jubbio için resmi olmayan Python bot kütüphanesi (@jubbio/core + @jubbio/voice tek pakette)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Lanux Yazılım Hizmetleri" }]
+authors = [
+    { name = "Lanux Yazılım Hizmetleri" },
+    { name = "Synaptis Bilişim ve Teknoloji" },
+]
 keywords = ["jubbio", "bot", "gateway", "api", "realtime", "chat", "voice", "livekit"]
 classifiers = [
     "Development Status :: 4 - Beta",

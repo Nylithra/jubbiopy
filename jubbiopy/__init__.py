@@ -4,7 +4,7 @@ JubbioPy — Jubbio platformu için Python bot kütüphanesi.
 ``@jubbio/core`` ve ``@jubbio/voice`` npm paketlerinin tek pakette birleşmiş
 Python karşılığıdır. Ses desteği ``jubbiopy.voice`` modülündedir.
 
-Yapımcı: Lanux Yazılım Hizmetleri
+Yapımcılar: Lanux Yazılım Hizmetleri ve Synaptis Bilişim ve Teknoloji (ortak geliştirme)
 
 Not: Resmi bir Jubbio kütüphanesi değildir; bağımsız bir topluluk projesidir.
 """
@@ -119,14 +119,14 @@ from .utils.formatters import (
 )
 
 __title__ = "jubbiopy"
-__author__ = "Lanux Yazılım Hizmetleri"
+__author__ = "Lanux Yazılım Hizmetleri ve Synaptis Bilişim ve Teknoloji"
 __license__ = "MIT"
 try:  # Sürüm, kurulu paketin bilgisinden okunur (PyPI ile hep aynı kalır)
     from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
     __version__ = _pkg_version("jubbio")
 except PackageNotFoundError:  # kurulmadan, kaynak klasöründen çalıştırılıyorsa
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
 
 __all__ = [
     # İstemci

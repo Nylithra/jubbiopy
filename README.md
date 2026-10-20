@@ -12,12 +12,12 @@
   <a href="https://github.com/nylithra/jubbiopy/blob/main/LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-green" alt="MIT"></a>
 </p>
 
-<p align="center">Yapımcı: <strong>Lanux Yazılım Hizmetleri</strong></p>
+<p align="center"><strong>Lanux Yazılım Hizmetleri</strong> × <strong>Synaptis Bilişim ve Teknoloji</strong> ortaklığıyla geliştirilmiştir</p>
 
 
 > [!IMPORTANT]
-> **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri tarafından
-> geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
+> **Bu resmi bir Jubbio kütüphanesi değildir.** JubbioPy, Lanux Yazılım Hizmetleri ve Synaptis Bilişim ve Teknoloji
+> ortaklığıyla geliştirilen bağımsız bir topluluk projesidir; Jubbio ile bir bağlantısı yoktur ve Jubbio tarafından
 > onaylanmamıştır. 
 
 ---
@@ -510,6 +510,6 @@ Hata bildirirken Python sürümünüzü, işletim sisteminizi ve konsoldaki hata
 
 ## 📄 Lisans
 
-[MIT](https://github.com/nylithra/jubbiopy/blob/main/LICENSE) © Lanux Yazılım Hizmetleri
+[MIT](https://github.com/nylithra/jubbiopy/blob/main/LICENSE) © Lanux Yazılım Hizmetleri ve Synaptis Bilişim ve Teknoloji
 
 JubbioPy bağımsız bir projedir; "Jubbio" adı ve logosu sahiplerine aittir.
